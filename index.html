@@ -58,7 +58,6 @@
             padding: 25px;
             border-radius: 15px;
             text-align: center;
-            cursor: pointer;
             transition: transform 0.3s;
         }
         .stat-card:hover {
@@ -214,7 +213,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Басты бет -->
         <div class="hero">
             <h1>⛽ Жанармай станциясының жұмысын модельдеу</h1>
             <p>Дискретті-оқиғалық модельдеу | SimPy кітапханасы | Python</p>
@@ -226,7 +224,6 @@
             </div>
         </div>
 
-        <!-- Статистика -->
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-number">18</div>
@@ -246,7 +243,6 @@
             </div>
         </div>
 
-        <!-- График -->
         <div class="graph-section">
             <h2>📈 Жанармай станциясындағы кезек динамикасы</h2>
             <div class="graph-container">
@@ -259,7 +255,6 @@
             </div>
         </div>
 
-        <!-- Параметрлер -->
         <div class="params-section">
             <h2>⚙️ Модель параметрлері</h2>
             <div class="param-item">
@@ -280,7 +275,6 @@
             </div>
         </div>
 
-        <!-- Код -->
         <div class="code-section">
             <h2>💻 Python коды (main.py)</h2>
             <div class="code-tabs">
@@ -295,10 +289,9 @@
             </div>
         </div>
 
-        <!-- GitHub -->
         <div class="github-section">
             <h2>🔗 GitHub репозиторий</h2>
-            <a href="https://github.com/abdza938-commits/gas-station-simulation" id="githubLink" class="github-link" target="_blank">
+            <a href="#" id="githubLink" class="github-link" target="_blank">
                 📂 github.com/abdza938-commits/gas-station-simulation
             </a>
             <br><br>
@@ -311,22 +304,23 @@
     </div>
 
     <script>
-        // ========== ГРАФИК ==========
+        // Canvas элементін алу
         const canvas = document.getElementById('queueGraph');
         const ctx = canvas.getContext('2d');
         
-        // Графиктің өлшемін орнату
+        // Канвас өлшемін орнату
         canvas.width = 800;
         canvas.height = 400;
         
-        // Деректер (уақыт және кезек ұзындығы)
+        // Деректер
         const timeData = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120];
         const queueData = [0, 0, 1, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0];
         
         let currentZoom = 1;
         
+        // Графикті салу функциясы
         function drawGraph() {
-            // Тазалау
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -379,66 +373,68 @@
             }
             
             // Графикті сызу
-            if (timeData.length > 0) {
-                const xScale = (canvas.width - 70) / (Math.max(...timeData) - Math.min(...timeData));
-                const yScale = (canvas.height - 60) / 5;
-                
-                ctx.beginPath();
-                ctx.strokeStyle = '#667eea';
-                ctx.lineWidth = 2.5;
-                
-                let firstPoint = true;
-                for (let i = 0; i < timeData.length; i++) {
-                    const x = 50 + timeData[i] * xScale;
-                    const y = canvas.height - 40 - queueData[i] * yScale;
-                    
-                    if (firstPoint) {
-                        ctx.moveTo(x, y);
-                        firstPoint = false;
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
-                
-                // Астын бояу
-                ctx.lineTo(50 + timeData[timeData.length - 1] * xScale, canvas.height - 40);
-                ctx.lineTo(50, canvas.height - 40);
-                ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
-                ctx.fill();
-            }
+            const xScale = (canvas.width - 70) / 120;
+            const yScale = (canvas.height - 60) / 5;
             
-            // Нүктелерді белгілеу
+            ctx.beginPath();
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2.5;
+            
+            for (let i = 0; i < timeData.length; i++) {
+                const x = 50 + timeData[i] * xScale;
+                const y = canvas.height - 40 - queueData[i] * yScale;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Астын бояу
+            ctx.lineTo(50 + timeData[timeData.length - 1] * xScale, canvas.height - 40);
+            ctx.lineTo(50, canvas.height - 40);
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+            ctx.fill();
+            
+            // Нүктелер
             ctx.fillStyle = '#667eea';
             for (let i = 0; i < timeData.length; i++) {
-                const x = 50 + timeData[i] * ((canvas.width - 70) / 120);
-                const y = canvas.height - 40 - queueData[i] * ((canvas.height - 60) / 5);
+                const x = 50 + timeData[i] * xScale;
+                const y = canvas.height - 40 - queueData[i] * yScale;
                 ctx.beginPath();
-                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
                 ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = '#667eea';
             }
         }
         
-        // Графикті бірінші рет салу
+        // Графикті салу
         drawGraph();
-        
-        // ========== КНОПКАЛАР ==========
         
         // Үлкейту
         document.getElementById('zoomInBtn').addEventListener('click', function() {
-            currentZoom = Math.min(currentZoom + 0.1, 2);
-            canvas.style.transform = `scale(${currentZoom})`;
-            canvas.style.transformOrigin = 'top left';
+            if (currentZoom < 2) {
+                currentZoom += 0.1;
+                canvas.style.transform = 'scale(' + currentZoom + ')';
+                canvas.style.transformOrigin = 'top left';
+            }
         });
         
         // Кішірейту
         document.getElementById('zoomOutBtn').addEventListener('click', function() {
-            currentZoom = Math.max(currentZoom - 0.1, 0.5);
-            canvas.style.transform = `scale(${currentZoom})`;
-            canvas.style.transformOrigin = 'top left';
+            if (currentZoom > 0.5) {
+                currentZoom -= 0.1;
+                canvas.style.transform = 'scale(' + currentZoom + ')';
+                canvas.style.transformOrigin = 'top left';
+            }
         });
         
-        // Графикті жүктеу (PNG ретінде сақтау)
+        // Графикті жүктеу
         document.getElementById('downloadGraphBtn').addEventListener('click', function() {
             const link = document.createElement('a');
             link.download = 'graph.png';
@@ -455,7 +451,10 @@
             });
         });
         
-        // ========== КОДТЫ КӨРСЕТУ ==========
+        // GitHub сілтемесі
+        document.getElementById('githubLink').href = 'https://github.com/abdza938-commits/gas-station-simulation';
+        
+        // Кодтар
         const mainCode = `import simpy
 import random
 import matplotlib.pyplot as plt
@@ -518,7 +517,7 @@ def run_simulation(num_pumps=2, inter_arrival_mean=5.0, refueling_mean=8.0, sim_
         plt.show()
 
 if __name__ == "__main__":
-    run_simulation(num_pumps=2, inter_arrival_mean=5, refueling_mean=8, sim_duration=120)`;
+    run_simulation()`;
         
         const modelCode = `class GasStation:
     def __init__(self, env, num_pumps, refueling_time_mean):
@@ -542,19 +541,23 @@ if __name__ == "__main__":
             self.queue_lengths.append((self.env.now, len(self.pump.queue)))
             yield self.env.timeout(0.5)`;
         
-        document.getElementById('mainCode').textContent = mainCode;
-        document.getElementById('modelCode').textContent = modelCode;
+        document.getElementById('mainCode').innerText = mainCode;
+        document.getElementById('modelCode').innerText = modelCode;
         
-        // ========== КОД ТАБТАРЫ ==========
+        // Табтар
         const tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                tabBtns.forEach(b => b.classList.remove('active'));
+        for (let i = 0; i < tabBtns.length; i++) {
+            tabBtns[i].addEventListener('click', function() {
+                for (let j = 0; j < tabBtns.length; j++) {
+                    tabBtns[j].classList.remove('active');
+                }
                 this.classList.add('active');
-                document.querySelectorAll('.code-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(this.getAttribute('data-tab') + '-tab').classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById('main-tab').classList.remove('active');
+                document.getElementById('model-tab').classList.remove('active');
+                document.getElementById(tabId + '-tab').classList.add('active');
             });
-        });
+        }
     </script>
 </body>
 </html>

@@ -63,9 +63,10 @@
         }
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #667eea;
         }
@@ -76,17 +77,28 @@
             margin-bottom: 30px;
             text-align: center;
         }
+        .graph-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .graph-container {
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
         canvas {
-            max-width: 100%;
             background: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
         }
         .graph-buttons {
             margin-top: 20px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .params-section {
             background: white;
@@ -94,13 +106,23 @@
             padding: 30px;
             margin-bottom: 30px;
         }
+        .params-section h2 {
+            margin-bottom: 20px;
+        }
         .param-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px;
+            padding: 12px 20px;
             background: #f5f7fa;
             margin-bottom: 10px;
             border-radius: 10px;
+        }
+        .param-name {
+            font-weight: 600;
+        }
+        .param-value {
+            font-weight: bold;
+            color: #667eea;
         }
         .code-section {
             background: #1e1e1e;
@@ -110,6 +132,7 @@
         }
         .code-section h2 {
             color: white;
+            margin-bottom: 20px;
         }
         .code-tabs {
             display: flex;
@@ -123,6 +146,7 @@
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s;
         }
         .tab-btn.active {
             background: #667eea;
@@ -139,15 +163,18 @@
         }
         pre {
             color: #f8f8f2;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 0.8rem;
+            line-height: 1.5;
             white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .github-section {
             background: white;
             border-radius: 20px;
             padding: 30px;
             text-align: center;
+            margin-bottom: 30px;
         }
         .github-link {
             display: inline-block;
@@ -158,13 +185,22 @@
             text-decoration: none;
             margin: 15px 0;
         }
-        button {
+        .github-link:hover {
+            background: #0366d6;
+        }
+        .btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 25px;
             border-radius: 10px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
         }
         footer {
             text-align: center;
@@ -178,28 +214,30 @@
 </head>
 <body>
     <div class="container">
+        <!-- Басты бет -->
         <div class="hero">
             <h1>⛽ Жанармай станциясының жұмысын модельдеу</h1>
-            <p>Дискретті-оқиғалық модельдеу | SimPy | Python</p>
+            <p>Дискретті-оқиғалық модельдеу | SimPy кітапханасы | Python</p>
             <div class="badges">
-                <span class="badge">📊 Python</span>
+                <span class="badge">📊 Python 3.x</span>
                 <span class="badge">⚡ SimPy</span>
                 <span class="badge">📈 Matplotlib</span>
                 <span class="badge">🎓 Курстық жоба</span>
             </div>
         </div>
 
+        <!-- Статистика -->
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-number" id="carCount">18</div>
+                <div class="stat-number">18</div>
                 <div>Барлық көлік саны</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="avgWait">0.34</div>
+                <div class="stat-number">0.34</div>
                 <div>Орташа күту уақыты (мин)</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="maxQueue">3</div>
+                <div class="stat-number">3</div>
                 <div>Ең ұзын кезек (көлік)</div>
             </div>
             <div class="stat-card">
@@ -208,105 +246,314 @@
             </div>
         </div>
 
+        <!-- График -->
         <div class="graph-section">
-            <h2>📈 Кезек динамикасы</h2>
-            <canvas id="queueGraph" width="800" height="400"></canvas>
-            <div class="graph-buttons">
-                <button id="zoomInBtn">🔍 Үлкейту</button>
-                <button id="zoomOutBtn">🔍 Кішірейту</button>
-                <button id="downloadGraphBtn">📥 Графикті жүктеу</button>
+            <h2>📈 Жанармай станциясындағы кезек динамикасы</h2>
+            <div class="graph-container">
+                <canvas id="queueGraph" width="800" height="400" style="width:100%; max-width:800px; height:auto"></canvas>
+                <div class="graph-buttons">
+                    <button class="btn" id="zoomInBtn">🔍 Үлкейту</button>
+                    <button class="btn" id="zoomOutBtn">🔍 Кішірейту</button>
+                    <button class="btn" id="downloadGraphBtn">📥 Графикті жүктеу</button>
+                </div>
             </div>
         </div>
 
+        <!-- Параметрлер -->
         <div class="params-section">
-            <h2>⚙️ Параметрлер</h2>
-            <div class="param-item"><span>Колонкалар саны:</span><span>2</span></div>
-            <div class="param-item"><span>Келу аралығы (мин):</span><span>5</span></div>
-            <div class="param-item"><span>Құю уақыты (мин):</span><span>8</span></div>
+            <h2>⚙️ Модель параметрлері</h2>
+            <div class="param-item">
+                <span class="param-name">Жанармай колонкаларының саны:</span>
+                <span class="param-value">2</span>
+            </div>
+            <div class="param-item">
+                <span class="param-name">Көліктердің орташа келу аралығы:</span>
+                <span class="param-value">5 минут</span>
+            </div>
+            <div class="param-item">
+                <span class="param-name">Орташа жанармай құю уақыты:</span>
+                <span class="param-value">8 минут</span>
+            </div>
+            <div class="param-item">
+                <span class="param-name">Модельдеу ұзақтығы:</span>
+                <span class="param-value">120 минут (2 сағат)</span>
+            </div>
         </div>
 
+        <!-- Код -->
         <div class="code-section">
-            <h2>💻 Python коды</h2>
+            <h2>💻 Python коды (main.py)</h2>
             <div class="code-tabs">
                 <button class="tab-btn active" data-tab="main">main.py</button>
                 <button class="tab-btn" data-tab="model">GasStation класы</button>
             </div>
-            <div class="code-content active" id="main-tab"><pre id="mainCode"></pre></div>
-            <div class="code-content" id="model-tab"><pre id="modelCode"></pre></div>
+            <div class="code-content active" id="main-tab">
+                <pre id="mainCode"></pre>
+            </div>
+            <div class="code-content" id="model-tab">
+                <pre id="modelCode"></pre>
+            </div>
         </div>
 
+        <!-- GitHub -->
         <div class="github-section">
-            <h2>🔗 GitHub</h2>
-            <a href="#" id="githubLink" class="github-link">📂 GitHub репозиторий</a>
-            <br><button id="copyLinkBtn">📋 Сілтемені көшіру</button>
+            <h2>🔗 GitHub репозиторий</h2>
+            <a href="https://github.com/abdza938-commits/gas-station-simulation" id="githubLink" class="github-link" target="_blank">
+                📂 github.com/abdza938-commits/gas-station-simulation
+            </a>
+            <br><br>
+            <button class="btn" id="copyLinkBtn">📋 Сілтемені көшіру</button>
         </div>
-        <footer>© 2025 | Жанармай станциясын модельдеу</footer>
+
+        <footer>
+            <p>© 2025 | Жанармай станциясын модельдеу | Курстық жұмыс</p>
+        </footer>
     </div>
 
     <script>
+        // ========== ГРАФИК ==========
         const canvas = document.getElementById('queueGraph');
         const ctx = canvas.getContext('2d');
-        canvas.width = 800; canvas.height = 400;
         
-        const timeData = [0,10,20,30,40,50,60,70,80,90,100,110,120];
-        const queueData = [0,1,2,1,2,3,2,1,2,1,0,1,0];
+        // Графиктің өлшемін орнату
+        canvas.width = 800;
+        canvas.height = 400;
+        
+        // Деректер (уақыт және кезек ұзындығы)
+        const timeData = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120];
+        const queueData = [0, 0, 1, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0];
+        
+        let currentZoom = 1;
         
         function drawGraph() {
+            // Тазалау
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Тор сызу
             ctx.strokeStyle = '#ddd';
-            for(let i=0;i<=10;i++) {
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 10; i++) {
+                const x = 50 + (i / 10) * (canvas.width - 70);
                 ctx.beginPath();
-                ctx.moveTo(50, i*36);
-                ctx.lineTo(canvas.width-20, i*36);
+                ctx.moveTo(x, 20);
+                ctx.lineTo(x, canvas.height - 40);
                 ctx.stroke();
+                
+                const y = 20 + (i / 10) * (canvas.height - 60);
                 ctx.beginPath();
-                ctx.moveTo(50 + i*68, 20);
-                ctx.lineTo(50 + i*68, canvas.height-40);
+                ctx.moveTo(50, y);
+                ctx.lineTo(canvas.width - 20, y);
                 ctx.stroke();
             }
+            
+            // Осьтер
             ctx.beginPath();
-            ctx.strokeStyle = '#667eea';
+            ctx.strokeStyle = '#333';
             ctx.lineWidth = 2;
-            for(let i=0;i<timeData.length;i++) {
-                let x = 50 + (timeData[i]/120)*(canvas.width-70);
-                let y = canvas.height-40 - (queueData[i]/5)*(canvas.height-60);
-                if(i===0) ctx.moveTo(x,y);
-                else ctx.lineTo(x,y);
-            }
+            ctx.moveTo(50, 20);
+            ctx.lineTo(50, canvas.height - 40);
+            ctx.lineTo(canvas.width - 20, canvas.height - 40);
             ctx.stroke();
-            ctx.fillStyle = '#667eea';
+            
+            // Ось атаулары
+            ctx.fillStyle = '#333';
             ctx.font = '12px Arial';
-            ctx.fillText('Уақыт (мин)', canvas.width/2, canvas.height-10);
+            ctx.fillText('Уақыт (минут)', canvas.width / 2 - 40, canvas.height - 15);
             ctx.save();
-            ctx.translate(20, canvas.height/2);
-            ctx.rotate(-Math.PI/2);
-            ctx.fillText('Кезек ұзындығы', -30, 0);
+            ctx.translate(25, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Кезектегі көліктер саны', -30, 0);
             ctx.restore();
+            
+            // Мәндерді жазу
+            for (let i = 0; i <= 5; i++) {
+                ctx.fillStyle = '#666';
+                ctx.font = '10px Arial';
+                ctx.fillText(i.toString(), 30, canvas.height - 40 - (i / 5) * (canvas.height - 60));
+            }
+            for (let i = 0; i <= 6; i++) {
+                ctx.fillStyle = '#666';
+                ctx.font = '10px Arial';
+                ctx.fillText((i * 20).toString(), 45 + (i / 6) * (canvas.width - 70), canvas.height - 28);
+            }
+            
+            // Графикті сызу
+            if (timeData.length > 0) {
+                const xScale = (canvas.width - 70) / (Math.max(...timeData) - Math.min(...timeData));
+                const yScale = (canvas.height - 60) / 5;
+                
+                ctx.beginPath();
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 2.5;
+                
+                let firstPoint = true;
+                for (let i = 0; i < timeData.length; i++) {
+                    const x = 50 + timeData[i] * xScale;
+                    const y = canvas.height - 40 - queueData[i] * yScale;
+                    
+                    if (firstPoint) {
+                        ctx.moveTo(x, y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Астын бояу
+                ctx.lineTo(50 + timeData[timeData.length - 1] * xScale, canvas.height - 40);
+                ctx.lineTo(50, canvas.height - 40);
+                ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+                ctx.fill();
+            }
+            
+            // Нүктелерді белгілеу
+            ctx.fillStyle = '#667eea';
+            for (let i = 0; i < timeData.length; i++) {
+                const x = 50 + timeData[i] * ((canvas.width - 70) / 120);
+                const y = canvas.height - 40 - queueData[i] * ((canvas.height - 60) / 5);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
         }
+        
+        // Графикті бірінші рет салу
         drawGraph();
         
-        let zoom=1;
-        document.getElementById('zoomInBtn').onclick = ()=>{ zoom=Math.min(zoom+0.1,2); canvas.style.transform=`scale(${zoom})`; };
-        document.getElementById('zoomOutBtn').onclick = ()=>{ zoom=Math.max(zoom-0.1,0.5); canvas.style.transform=`scale(${zoom})`; };
-        document.getElementById('downloadGraphBtn').onclick = ()=>{ let a=document.createElement('a'); a.download='graph.png'; a.href=canvas.toDataURL(); a.click(); };
-        document.getElementById('copyLinkBtn').onclick = ()=>{ navigator.clipboard.writeText('https://abdza938-commits.github.io/gas-station-simulation/'); alert('Сілтеме көшірілді!'); };
+        // ========== КНОПКАЛАР ==========
         
-        const mainCode = `import simpy\nimport random\nimport matplotlib.pyplot as plt\n\nclass GasStation:\n    def __init__(self, env, num_pumps, refueling_time_mean):\n        self.env = env\n        self.pump = simpy.Resource(env, num_pumps)\n        self.refueling_time_mean = refueling_time_mean\n        self.wait_times = []\n        self.queue_lengths = []\n\n    def refuel(self, car_name):\n        arrival_time = self.env.now\n        with self.pump.request() as req:\n            yield req\n            wait_time = self.env.now - arrival_time\n            self.wait_times.append(wait_time)\n            refuel_duration = random.expovariate(1.0 / self.refueling_time_mean)\n            yield self.env.timeout(refuel_duration)\n\n    def monitor_queue(self):\n        while True:\n            self.queue_lengths.append((self.env.now, len(self.pump.queue)))\n            yield self.env.timeout(0.5)\n\ndef car_generator(env, station, inter_arrival_time_mean):\n    car_id = 0\n    while True:\n        yield env.timeout(random.expovariate(1.0 / inter_arrival_time_mean))\n        car_id += 1\n        env.process(station.refuel(f"Көлік-{car_id}"))\n\ndef run_simulation(num_pumps=2, inter_arrival_mean=5.0, refueling_mean=8.0, sim_duration=120):\n    env = simpy.Environment()\n    station = GasStation(env, num_pumps, refueling_mean)\n    env.process(car_generator(env, station, inter_arrival_mean))\n    env.process(station.monitor_queue())\n    env.run(until=sim_duration)\n    \n    avg_wait = sum(station.wait_times) / len(station.wait_times) if station.wait_times else 0\n    max_queue = max([q for (t,q) in station.queue_lengths]) if station.queue_lengths else 0\n    \n    print(f"Барлық көлік саны: {len(station.wait_times)}")\n    print(f"Орташа кезек күту уақыты: {avg_wait:.2f} минут")\n    print(f"Ең ұзын кезек: {max_queue} көлік")\n\nif __name__ == "__main__":\n    run_simulation()`;
+        // Үлкейту
+        document.getElementById('zoomInBtn').addEventListener('click', function() {
+            currentZoom = Math.min(currentZoom + 0.1, 2);
+            canvas.style.transform = `scale(${currentZoom})`;
+            canvas.style.transformOrigin = 'top left';
+        });
         
-        const modelCode = `class GasStation:\n    def __init__(self, env, num_pumps, refueling_time_mean):\n        self.env = env\n        self.pump = simpy.Resource(env, num_pumps)\n        self.refueling_time_mean = refueling_time_mean\n        self.wait_times = []\n        self.queue_lengths = []\n\n    def refuel(self, car_name):\n        arrival_time = self.env.now\n        with self.pump.request() as req:\n            yield req\n            wait_time = self.env.now - arrival_time\n            self.wait_times.append(wait_time)\n            refuel_duration = random.expovariate(1.0 / self.refueling_time_mean)\n            yield self.env.timeout(refuel_duration)\n\n    def monitor_queue(self):\n        while True:\n            self.queue_lengths.append((self.env.now, len(self.pump.queue)))\n            yield self.env.timeout(0.5)`;
+        // Кішірейту
+        document.getElementById('zoomOutBtn').addEventListener('click', function() {
+            currentZoom = Math.max(currentZoom - 0.1, 0.5);
+            canvas.style.transform = `scale(${currentZoom})`;
+            canvas.style.transformOrigin = 'top left';
+        });
+        
+        // Графикті жүктеу (PNG ретінде сақтау)
+        document.getElementById('downloadGraphBtn').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = 'graph.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            alert('График жүктелді!');
+        });
+        
+        // Сілтемені көшіру
+        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+            const link = 'https://abdza938-commits.github.io/gas-station-simulation/';
+            navigator.clipboard.writeText(link).then(function() {
+                alert('Сілтеме көшірілді: ' + link);
+            });
+        });
+        
+        // ========== КОДТЫ КӨРСЕТУ ==========
+        const mainCode = `import simpy
+import random
+import matplotlib.pyplot as plt
+
+class GasStation:
+    def __init__(self, env, num_pumps, refueling_time_mean):
+        self.env = env
+        self.pump = simpy.Resource(env, num_pumps)
+        self.refueling_time_mean = refueling_time_mean
+        self.wait_times = []
+        self.queue_lengths = []
+
+    def refuel(self, car_name):
+        arrival_time = self.env.now
+        with self.pump.request() as req:
+            yield req
+            wait_time = self.env.now - arrival_time
+            self.wait_times.append(wait_time)
+            refuel_duration = random.expovariate(1.0 / self.refueling_time_mean)
+            yield self.env.timeout(refuel_duration)
+
+    def monitor_queue(self):
+        while True:
+            self.queue_lengths.append((self.env.now, len(self.pump.queue)))
+            yield self.env.timeout(0.5)
+
+def car_generator(env, station, inter_arrival_time_mean):
+    car_id = 0
+    while True:
+        yield env.timeout(random.expovariate(1.0 / inter_arrival_time_mean))
+        car_id += 1
+        env.process(station.refuel(f"Көлік-{car_id}"))
+
+def run_simulation(num_pumps=2, inter_arrival_mean=5.0, refueling_mean=8.0, sim_duration=120):
+    env = simpy.Environment()
+    station = GasStation(env, num_pumps, refueling_mean)
+    env.process(car_generator(env, station, inter_arrival_mean))
+    env.process(station.monitor_queue())
+    env.run(until=sim_duration)
+    
+    avg_wait = sum(station.wait_times) / len(station.wait_times) if station.wait_times else 0
+    max_queue = max([q for (t,q) in station.queue_lengths]) if station.queue_lengths else 0
+    
+    print("=" * 50)
+    print("МОДЕЛЬДЕУ НӘТИЖЕЛЕРІ")
+    print("=" * 50)
+    print(f"Барлық көлік саны: {len(station.wait_times)}")
+    print(f"Орташа кезек күту уақыты: {avg_wait:.2f} минут")
+    print(f"Ең ұзын кезек: {max_queue} көлік")
+    print("=" * 50)
+    
+    if station.queue_lengths:
+        times, queues = zip(*station.queue_lengths)
+        plt.figure(figsize=(10, 4))
+        plt.plot(times, queues, drawstyle="steps-post", linewidth=2)
+        plt.xlabel("Уақыт (минут)")
+        plt.ylabel("Кезектегі көліктер саны")
+        plt.title("Жанармай станциясындағы кезек динамикасы")
+        plt.grid(True, linestyle="--", alpha=0.7)
+        plt.show()
+
+if __name__ == "__main__":
+    run_simulation(num_pumps=2, inter_arrival_mean=5, refueling_mean=8, sim_duration=120)`;
+        
+        const modelCode = `class GasStation:
+    def __init__(self, env, num_pumps, refueling_time_mean):
+        self.env = env
+        self.pump = simpy.Resource(env, num_pumps)
+        self.refueling_time_mean = refueling_time_mean
+        self.wait_times = []
+        self.queue_lengths = []
+
+    def refuel(self, car_name):
+        arrival_time = self.env.now
+        with self.pump.request() as req:
+            yield req
+            wait_time = self.env.now - arrival_time
+            self.wait_times.append(wait_time)
+            refuel_duration = random.expovariate(1.0 / self.refueling_time_mean)
+            yield self.env.timeout(refuel_duration)
+
+    def monitor_queue(self):
+        while True:
+            self.queue_lengths.append((self.env.now, len(self.pump.queue)))
+            yield self.env.timeout(0.5)`;
         
         document.getElementById('mainCode').textContent = mainCode;
         document.getElementById('modelCode').textContent = modelCode;
-        document.getElementById('githubLink').href = 'https://github.com/abdza938-commits/gas-station-simulation';
         
-        document.querySelectorAll('.tab-btn').forEach(btn=>{
-            btn.onclick = ()=>{
-                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.code-content').forEach(c=>c.classList.remove('active'));
-                document.getElementById(btn.getAttribute('data-tab')+'-tab').classList.add('active');
-            };
+        // ========== КОД ТАБТАРЫ ==========
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.code-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(this.getAttribute('data-tab') + '-tab').classList.add('active');
+            });
         });
     </script>
 </body>
